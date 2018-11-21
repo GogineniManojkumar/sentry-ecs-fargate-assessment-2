@@ -1,0 +1,37 @@
+[
+{
+    "cpu": 512,
+    "image": "sentry:latest",
+    "memory": 1650,
+    "name": "upgrade",
+    "networkMode": "awsvpc",
+    "command": [ "upgrade", "--noinput" ],
+      "environment" : [
+        { "name" : "SENTRY_SECRET_KEY", "value" : "${SENTRY_SECRET_KEY}" },
+        { "name" : "SENTRY_REDIS_PORT", "value" : "${SENTRY_REDIS_PORT}" },
+        { "name" : "SENTRY_REDIS_HOST", "value" : "${SENTRY_REDIS_HOST}" },
+        { "name" : "SENTRY_MEMCACHED_HOST", "value" : "${SENTRY_MEMCACHED_HOST}" },
+        { "name" : "SENTRY_MEMCACHED_PORT", "value" : "${SENTRY_MEMCACHED_PORT}" },
+        { "name" : "SENTRY_POSTGRES_HOST", "value" : "${SENTRY_POSTGRES_HOST}" },
+        { "name" : "SENTRY_POSTGRES_PORT", "value" : "${SENTRY_POSTGRES_PORT}" },
+        { "name" : "SENTRY_DB_NAME", "value" : "${SENTRY_DB_NAME}" },
+        { "name" : "SENTRY_DB_USER", "value" : "${SENTRY_DB_USER}" },
+        { "name" : "SENTRY_DB_PASSWORD", "value" : "${SENTRY_DB_PASSWORD}" },
+        { "name" : "SENTRY_EMAIL_HOST", "value" : "${SENTRY_EMAIL_HOST}" }
+    ],
+    "mountPoints" : [
+        {
+            "sourceVolume": "sentry-data",
+            "containerPath" : "/var/lib/sentry/files" 
+        }
+    ],
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${log_group}",
+            "awslogs-region": "${log_region}",
+            "awslogs-stream-prefix": "upgrade"
+        }
+    }
+}
+]

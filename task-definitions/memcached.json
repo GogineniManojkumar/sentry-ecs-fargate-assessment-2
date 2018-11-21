@@ -1,0 +1,22 @@
+[
+    {
+      "cpu": 250,
+      "image": "memcached:1.5-alpine",
+      "memory": 500,
+      "name": "memcached",
+      "networkMode": "awsvpc",
+      "portMappings": [
+        {
+          "containerPort": 11211
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${log_group}",
+            "awslogs-region": "${log_region}",
+            "awslogs-stream-prefix": "${log_prefix}"
+        }
+    }
+    }
+]

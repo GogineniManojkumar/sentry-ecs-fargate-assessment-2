@@ -1,0 +1,18 @@
+#!/bin/bash -xe
+sudo yum -y update
+sudo yum install -y wget git
+sudo yum install -y docker 
+sudo service docker start
+sudo usermod -a -G docker ec2-user
+sudo curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+sudo ln -s /usr/local/bin/docker-compose /usr/bin/
+
+sleep 120
+####### Sentry DB UPGRADE Deployment #######
+sudo docker network create -d bridge sentry
+#sudo docker run -d --name redis --network sentry redis
+sudo docker run --rm -e SENTRY_SECRET_KEY='${SENTRY_SECRET_KEY}' -e SENTRY_POSTGRES_HOST='${SENTRY_POSTGRES_HOST}' -e SENTRY_DB_NAME='${SENTRY_DB_NAME}' -e SENTRY_DB_USER='${SENTRY_DB_USER}' -e SENTRY_DB_PASSWORD='${SENTRY_DB_PASSWORD}' -e SENTRY_REDIS_HOST='${SENTRY_REDIS_HOST}' --network sentry sentry:latest upgrade --noinput
+sudo docker run --rm -e SENTRY_SECRET_KEY='${SENTRY_SECRET_KEY}' -e SENTRY_POSTGRES_HOST='${SENTRY_POSTGRES_HOST}' -e SENTRY_DB_NAME='${SENTRY_DB_NAME}' -e SENTRY_DB_USER='${SENTRY_DB_USER}' -e SENTRY_DB_PASSWORD='${SENTRY_DB_PASSWORD}' -e SENTRY_REDIS_HOST='${SENTRY_REDIS_HOST}' --network sentry sentry:latest createuser   --email '${SENTRY_WEB_USER}' --password '${SENTRY_WEB_PASSWORD}' --superuser
+sleep 120
+echo "sudo halt" | at now + 1 min

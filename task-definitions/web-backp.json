@@ -1,0 +1,184 @@
+[
+    {
+    "cpu": 450,
+    "image": "sentry:latest",
+    "memory": 700,
+    "name": "web",
+    "networkMode": "awsvpc",
+    "portMappings": [
+    {
+        "containerPort": 9000,
+        "hostPort" : 9000
+    }
+      ],
+      "environment" : [
+        { "name" : "SENTRY_SECRET_KEY", "value" : "${SENTRY_SECRET_KEY}" },
+        { "name" : "SENTRY_REDIS_PORT", "value" : "${SENTRY_REDIS_PORT}" },
+        { "name" : "SENTRY_REDIS_HOST", "value" : "${SENTRY_REDIS_HOST}" },
+        { "name" : "SENTRY_MEMCACHED_HOST", "value" : "${SENTRY_MEMCACHED_HOST}" },
+        { "name" : "SENTRY_MEMCACHED_PORT", "value" : "${SENTRY_MEMCACHED_PORT}" },
+        { "name" : "SENTRY_POSTGRES_HOST", "value" : "${SENTRY_POSTGRES_HOST}" },
+        { "name" : "SENTRY_POSTGRES_PORT", "value" : "${SENTRY_POSTGRES_PORT}" },
+        { "name" : "SENTRY_DB_NAME", "value" : "${SENTRY_DB_NAME}" },
+        { "name" : "SENTRY_DB_USER", "value" : "${SENTRY_DB_USER}" },
+        { "name" : "SENTRY_DB_PASSWORD", "value" : "${SENTRY_DB_PASSWORD}" },
+        { "name" : "SENTRY_EMAIL_HOST", "value" : "${SENTRY_EMAIL_HOST}" }
+    ],
+    "mountPoints" : [
+        {
+            "sourceVolume": "sentry-data",
+            "containerPath" : "/var/lib/sentry/files" 
+        }
+    ],
+    "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+            "awslogs-group": "${log_group}",
+            "awslogs-region": "${log_region}",
+            "awslogs-stream-prefix": "${web_log_prefix}"
+        }
+    }
+    },
+    {
+        "cpu": 450,
+        "image": "sentry:latest",
+        "memory": 700,
+        "name": "worker",
+        "networkMode": "awsvpc",
+        "command": [ "run" , "worker" ],
+        "environment" : [
+            { "name" : "SENTRY_SECRET_KEY", "value" : "${SENTRY_SECRET_KEY}" },
+            { "name" : "SENTRY_REDIS_PORT", "value" : "${SENTRY_REDIS_PORT}" },
+            { "name" : "SENTRY_REDIS_HOST", "value" : "${SENTRY_REDIS_HOST}" },
+            { "name" : "SENTRY_MEMCACHED_HOST", "value" : "${SENTRY_MEMCACHED_HOST}" },
+            { "name" : "SENTRY_MEMCACHED_PORT", "value" : "${SENTRY_MEMCACHED_PORT}" },
+            { "name" : "SENTRY_POSTGRES_HOST", "value" : "${SENTRY_POSTGRES_HOST}" },
+            { "name" : "SENTRY_POSTGRES_PORT", "value" : "${SENTRY_POSTGRES_PORT}" },
+            { "name" : "SENTRY_DB_NAME", "value" : "${SENTRY_DB_NAME}" },
+            { "name" : "SENTRY_DB_USER", "value" : "${SENTRY_DB_USER}" },
+            { "name" : "SENTRY_DB_PASSWORD", "value" : "${SENTRY_DB_PASSWORD}" },
+            { "name" : "SENTRY_EMAIL_HOST", "value" : "${SENTRY_EMAIL_HOST}" }
+        ],
+        "mountPoints" : [
+            {
+                "sourceVolume": "sentry-data",
+                "containerPath" : "/var/lib/sentry/files" 
+            }
+        ],
+        "logConfiguration": {
+            "logDriver": "awslogs",
+            "options": {
+                "awslogs-group": "${log_group}",
+                "awslogs-region": "${log_region}",
+                "awslogs-stream-prefix": "${worker_log_prefix}"
+            }
+        }
+    },
+        {
+            "cpu": 450,
+            "image": "sentry:latest",
+            "memory": 700,
+            "name": "cron",
+            "networkMode": "awsvpc",
+            "command": [ "run" , "cron" ],
+              "environment" : [
+                { "name" : "SENTRY_SECRET_KEY", "value" : "${SENTRY_SECRET_KEY}" },
+                { "name" : "SENTRY_REDIS_PORT", "value" : "${SENTRY_REDIS_PORT}" },
+                { "name" : "SENTRY_REDIS_HOST", "value" : "${SENTRY_REDIS_HOST}" },
+                { "name" : "SENTRY_MEMCACHED_HOST", "value" : "${SENTRY_MEMCACHED_HOST}" },
+                { "name" : "SENTRY_MEMCACHED_PORT", "value" : "${SENTRY_MEMCACHED_PORT}" },
+                { "name" : "SENTRY_POSTGRES_HOST", "value" : "${SENTRY_POSTGRES_HOST}" },
+                { "name" : "SENTRY_POSTGRES_PORT", "value" : "${SENTRY_POSTGRES_PORT}" },
+                { "name" : "SENTRY_DB_NAME", "value" : "${SENTRY_DB_NAME}" },
+                { "name" : "SENTRY_DB_USER", "value" : "${SENTRY_DB_USER}" },
+                { "name" : "SENTRY_DB_PASSWORD", "value" : "${SENTRY_DB_PASSWORD}" },
+                { "name" : "SENTRY_EMAIL_HOST", "value" : "${SENTRY_EMAIL_HOST}" }
+            ],
+            "mountPoints" : [
+                {
+                    "sourceVolume": "sentry-data",
+                    "containerPath" : "/var/lib/sentry/files" 
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "${log_group}",
+                    "awslogs-region": "${log_region}",
+                    "awslogs-stream-prefix": "${cron_log_prefix}"
+                }
+            }
+        },
+        {
+            "cpu": 450,
+            "image": "sentry:latest",
+            "memory": 1750,
+            "name": "upgrade",
+            "essential": false,
+            "networkMode": "awsvpc",
+            "command": [ "upgrade", "--noinput" ],
+              "environment" : [
+                { "name" : "SENTRY_SECRET_KEY", "value" : "${SENTRY_SECRET_KEY}" },
+                { "name" : "SENTRY_REDIS_PORT", "value" : "${SENTRY_REDIS_PORT}" },
+                { "name" : "SENTRY_REDIS_HOST", "value" : "${SENTRY_REDIS_HOST}" },
+                { "name" : "SENTRY_MEMCACHED_HOST", "value" : "${SENTRY_MEMCACHED_HOST}" },
+                { "name" : "SENTRY_MEMCACHED_PORT", "value" : "${SENTRY_MEMCACHED_PORT}" },
+                { "name" : "SENTRY_POSTGRES_HOST", "value" : "${SENTRY_POSTGRES_HOST}" },
+                { "name" : "SENTRY_POSTGRES_PORT", "value" : "${SENTRY_POSTGRES_PORT}" },
+                { "name" : "SENTRY_DB_NAME", "value" : "${SENTRY_DB_NAME}" },
+                { "name" : "SENTRY_DB_USER", "value" : "${SENTRY_DB_USER}" },
+                { "name" : "SENTRY_DB_PASSWORD", "value" : "${SENTRY_DB_PASSWORD}" },
+                { "name" : "SENTRY_EMAIL_HOST", "value" : "${SENTRY_EMAIL_HOST}" }
+            ],
+            "mountPoints" : [
+                {
+                    "sourceVolume": "sentry-data",
+                    "containerPath" : "/var/lib/sentry/files" 
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "${log_group}",
+                    "awslogs-region": "${log_region}",
+                    "awslogs-stream-prefix": "upgrade"
+                }
+            }
+        },
+        {
+            "cpu": 200,
+            "image": "sentry:latest",
+            "memory": 200,
+            "name": "user-create",
+            "essential": false,
+            "networkMode": "awsvpc",
+            "command": [ "createuser", "--email", "${SENTRY_WEB_USER}", "--password", "${SENTRY_WEB_PASSWORD}",  "--superuser" ],
+              "environment" : [
+                { "name" : "SENTRY_SECRET_KEY", "value" : "${SENTRY_SECRET_KEY}" },
+                { "name" : "SENTRY_REDIS_PORT", "value" : "${SENTRY_REDIS_PORT}" },
+                { "name" : "SENTRY_REDIS_HOST", "value" : "${SENTRY_REDIS_HOST}" },
+                { "name" : "SENTRY_MEMCACHED_HOST", "value" : "${SENTRY_MEMCACHED_HOST}" },
+                { "name" : "SENTRY_MEMCACHED_PORT", "value" : "${SENTRY_MEMCACHED_PORT}" },
+                { "name" : "SENTRY_POSTGRES_HOST", "value" : "${SENTRY_POSTGRES_HOST}" },
+                { "name" : "SENTRY_POSTGRES_PORT", "value" : "${SENTRY_POSTGRES_PORT}" },
+                { "name" : "SENTRY_DB_NAME", "value" : "${SENTRY_DB_NAME}" },
+                { "name" : "SENTRY_DB_USER", "value" : "${SENTRY_DB_USER}" },
+                { "name" : "SENTRY_DB_PASSWORD", "value" : "${SENTRY_DB_PASSWORD}" },
+                { "name" : "SENTRY_EMAIL_HOST", "value" : "${SENTRY_EMAIL_HOST}" }
+            ],
+            "mountPoints" : [
+                {
+                    "sourceVolume": "sentry-data",
+                    "containerPath" : "/var/lib/sentry/files" 
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "${log_group}",
+                    "awslogs-region": "${log_region}",
+                    "awslogs-stream-prefix": "user-create"
+                }
+            }
+        }
+]
